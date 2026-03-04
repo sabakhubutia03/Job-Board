@@ -14,7 +14,7 @@ public class UserController : ControllerBase
     public UserController(IUserService userService, ILogger<UserController> logger)
     {
         _userService = userService;
-        _logger = logger;
+        _logger = logger; 
     }
 
     [HttpPost]
@@ -31,6 +31,22 @@ public class UserController : ControllerBase
         var getAllUsers = await _userService.GetAllAsync();
         _logger.LogInformation("Get all Users");
         return Ok(getAllUsers);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<User>> UpdateAsync(int id,User user)
+    {
+        var update = await _userService.UpdateAsync(id, user);
+        _logger.LogInformation("Update User");
+        return Ok(update);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<User>> DeleteAsync(int id)
+    {
+         await _userService.DeleteAsync(id);
+        _logger.LogInformation("Delete User");
+        return Ok();
     }
 
 }
