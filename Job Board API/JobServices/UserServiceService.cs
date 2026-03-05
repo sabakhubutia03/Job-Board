@@ -1,4 +1,5 @@
-﻿using Job_Board_API.Job_Board.Data;
+﻿using Job_Board_API.Exceptions;
+using Job_Board_API.Job_Board.Data;
 using Job_Board_API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,14 +20,21 @@ public class UserServiceService : IUserService
         if (user == null)
         {
             _logger.LogError("User is null or empty");
-            throw new ArgumentNullException(nameof(user));
+            throw new ArgumentNullException(nameof(user), "User data cannot be null.");
         }
         
         var emailchek =  await _db.Users.AnyAsync(e => e.Email == user.Email);
         if (emailchek)
         {
-            _logger.LogError("Email is already registered");
-            throw new Exception("Email is already registered");
+            _logger.LogError("Registration failed: Email {Email} is already registered.", user.Email);
+            throw new ApiException(
+                "Email is already registered",     
+                "Conflict Error",                    
+                409,                             
+                "A user with this email address already exists in our system.", 
+                "/api/user/register"   
+            );
+            
         }
         
         _db.Users.Add(user);
@@ -40,7 +48,7 @@ public class UserServiceService : IUserService
         var  usersList = await _db.Users.ToListAsync();
         if (usersList.Count == 0)
         {
-            _logger.LogError("Users is empty");
+            _logger.LogInformation("Users is empty");
         }
         return usersList;
         
@@ -69,14 +77,24 @@ public class UserServiceService : IUserService
         if (update == null)
         {
             _logger.LogError("User not found");
-            throw new Exception("User not found");
+            throw new ApiException(
+                "User not found",
+                "Not Found", 
+                404, 
+                "No user exists with the provided ID", 
+                $"/api/user/update {id} - id");
         }
         
         var emailExist = await _db.Users.AnyAsync(e => e.Email == user.Email && e.Id != id);
         if (emailExist)
         {
             _logger.LogError("Email is already registered");
-            throw new Exception("Email is already registered");
+            throw new ApiException(
+                "Email is already registered",
+                "Conflict Error",
+                409,
+                "The email address you are trying to use is already taken by another user",
+                "/api/user/Update");
         }
         update.Email = user.Email;
         update.FirstName = user.FirstName;
