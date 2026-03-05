@@ -1,7 +1,7 @@
 ### 🚀 Job Board API
 A robust ASP.NET Core Web API designed for managing job listings, companies, and users. This project follows modern architectural patterns and best practices for building scalable, maintainable, and secure backend systems.
 
-🏗 Architecture & Design Patterns
+### 🏗 Architecture & Design Patterns
 Clean Architecture: Implemented a clear separation of concerns using Controllers, Services, and Data Layers to ensure code maintainability.
 
 Dependency Injection (DI): Fully utilized DI for managing service lifetimes and database context, promoting loose coupling and testability.
