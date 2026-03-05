@@ -21,6 +21,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<IUserService,UserServiceService>();
+builder.Services.AddScoped<IJobService,JobService>();
+builder.Services.AddScoped<ICompanyService,CompanyService>();
 
 var app = builder.Build();
 
