@@ -33,6 +33,14 @@ public class UserController : ControllerBase
         return Ok(getAllUsers);
     }
 
+    [HttpGet("{id}")]
+    public async Task<ActionResult<User>> GetById(int id)
+    {
+        var getUser = await _userService.GetByIdAsync(id);
+            _logger.LogInformation("Get User");
+            return Ok(getUser);
+    }
+
     [HttpPut("{id}")]
     public async Task<ActionResult<User>> UpdateAsync(int id,User user)
     {

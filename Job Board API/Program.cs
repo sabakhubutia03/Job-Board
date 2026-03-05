@@ -1,5 +1,6 @@
 using Job_Board_API.Job_Board.Data;
 using Job_Board_API.JobServices;
+using Job_Board_API.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -31,6 +32,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
