@@ -22,14 +22,14 @@ public class CompanyController : ControllerBase
     {
         var newCompany = await _companyService.CreateAsync(company);
         _logger.LogInformation("New company created");
-        return CreatedAtAction(nameof(GetById), new{ id = company.Id },newCompany);
+        return CreatedAtAction(nameof(GetById), new{ id = newCompany.Id },newCompany);
     }
 
     [HttpGet]
     public async Task<ActionResult<List<Company>>> GetAll()
     {
         var getAll = await _companyService.GetAllAsync();
-        _logger.LogInformation(" Company retrieved");
+        _logger.LogInformation("Company retrieved");
         return Ok(getAll);
     }
 
@@ -37,7 +37,7 @@ public class CompanyController : ControllerBase
     public async Task<ActionResult<Company>> GetById(int id)
     {
         var getById = await _companyService.GetByIdAsync(id);
-        _logger.LogInformation(" Company retrieved");
+        _logger.LogInformation("Company retrieved");
         return Ok(getById);
     }
 
@@ -50,10 +50,10 @@ public class CompanyController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Company>> Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        var deleteCompany = await _companyService.DeleteAsync(id);
+         await _companyService.DeleteAsync(id);
         _logger.LogInformation(" Company deleted");
-        return Ok(deleteCompany);
+        return Ok();
     }
 }

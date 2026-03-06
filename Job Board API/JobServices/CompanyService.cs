@@ -1,4 +1,5 @@
-﻿using Job_Board_API.Job_Board.Data;
+﻿using Job_Board_API.Exceptions;
+using Job_Board_API.Job_Board.Data;
 using Job_Board_API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,14 +20,25 @@ public class CompanyService : ICompanyService
     {
         if (string.IsNullOrEmpty(company.Name))
         {
-            _logger.LogError("Company name is empty");
-            throw new Exception("Company name is empty");
+            _logger.LogWarning("Company name is empty");
+            throw new ApiException(
+                "Company name is empty or null",
+                "BadRequest",
+                400,
+                "Company name cannot be empty",
+                "/api/company/name");
         }
 
         if (string.IsNullOrEmpty(company.Industry))
         {
-            _logger.LogError("Industry is empty");
-            throw new Exception("Industry is empty");
+            _logger.LogWarning("Industry is empty");
+            throw new ApiException(
+                "Industry is empty or null",
+                "BadRequest",
+                400,
+                "Industry cannot be empty",
+                "/api/company/industry"
+                );
         }
         
         await _db.Companies.AddAsync(company);
@@ -42,8 +54,14 @@ public class CompanyService : ICompanyService
         var getById = await _db.Companies.FindAsync(id);
         if (getById == null)
         {
-            _logger.LogInformation("Company not found");
-            throw new Exception("Company not found");
+            _logger.LogWarning("Company not found");
+            throw new ApiException(
+                "Company not found",
+                "NotFound",
+                404,
+                "Company not found",
+                "/api/company/id"
+            );
         }
         return getById;
     }
@@ -53,15 +71,29 @@ public class CompanyService : ICompanyService
 
         if (company == null)
         {
-            _logger.LogError("Company not found");
-            throw new Exception("Company not found");
+            _logger.LogWarning("Company not found");
+            throw new ApiException(
+                "Company cannot be null",
+                "BadRequest",
+                400,
+                "Company cannot be null",
+                "/api/company/update"
+            );
         }
+        
         var updateCompany = await _db.Companies.FindAsync(id);
         if (updateCompany == null)
         {
-            _logger.LogInformation("Company not found");
-            throw new  Exception("Company not found");
+            _logger.LogWarning("Company not found");
+            throw new ApiException(
+                "Company not found",
+                "NotFound",
+                404,
+                "Company not found",
+                "/api/company/company"
+            );
         }
+        
         if(!string.IsNullOrEmpty(company.Name)) 
             updateCompany.Name = company.Name;
         
@@ -75,16 +107,23 @@ public class CompanyService : ICompanyService
         return updateCompany;
     }
 
-    public async Task<Company> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var deleteCompany = await _db.Companies.FindAsync(id);
         if (deleteCompany == null)
         {
-            _logger.LogError("Company not found");
+            _logger.LogWarning("Company not found");
+            throw new ApiException(
+                "Company not found",
+                "NotFound",
+                404,
+                "Company not found",
+                "/api/company/delete"
+            );
         }
         
         _db.Remove(deleteCompany);
         await _db.SaveChangesAsync();
-        return deleteCompany;
+      
     }
 }
