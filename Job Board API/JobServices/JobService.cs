@@ -1,4 +1,5 @@
-﻿using Job_Board_API.Job_Board.Data;
+﻿using Job_Board_API.Exceptions;
+using Job_Board_API.Job_Board.Data;
 using Job_Board_API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +22,12 @@ public class JobService : IJobService
         if (string.IsNullOrEmpty(job.Title) || job.CompanyId <= 0)
         {
             _logger.LogError("Job Title and Company Id cannot be null");
-            throw new ArgumentException("Job Title and Company Id cannot be null");
+            throw new ApiException(
+                "Job Title and Company Id cannot be null",
+                " Conflict",
+                409,
+                "Job Title and Company Id cannot be null",
+                "/api/job/Create");
         } 
         
         await _db.Jobs.AddAsync(job);
@@ -45,7 +51,13 @@ public class JobService : IJobService
         if (jobId == null)
         {
             _logger.LogError("Job Id not found");
-            throw new ArgumentException("Job Id not found");
+            throw new ApiException(
+                "Job Id not found",
+                "NotFound",
+                404,
+                "Job Id not found",
+                "/api/job/GetByIdAsync"
+            );
         }
         return jobId;
     }
@@ -56,14 +68,26 @@ public class JobService : IJobService
         if (job == null)
         {
             _logger.LogError("Job  cannot be null");
-            throw new ArgumentException("Job  cannot be null");
+            throw new ApiException(
+                "Job  cannot be null or empty",
+                "BadRequest",
+                400,
+                "Job Id cannot be null",
+                "/api/job/UpdateAsync"
+            );
         }
         
         var update = await _db.Jobs.FindAsync(id);
        if (update == null)
        {
            _logger.LogError("Job Id not found");
-           throw new ArgumentException("Job Id not found");
+           throw new ApiException(
+               "Job Id not found",
+               "NotFound",
+               404,
+               "Job Id not found",
+               "/api/job/UpdateAsync"
+           );
        }
 
        if (!string.IsNullOrEmpty(job.Title)) 
@@ -73,20 +97,28 @@ public class JobService : IJobService
        if(!string.IsNullOrEmpty(job.Description))
            update.Description = job.Description;
        
+       if(job.CompanyId > 0)
+           update.CompanyId = job.CompanyId;
+       
        await _db.SaveChangesAsync();
        return update;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var delate = await _db.Jobs.FindAsync(id);
         if (delate == null)
         {
             _logger.LogWarning("Job Id not found");
-            return false;
+            throw new ApiException(
+                "Job Id not found",
+                "NotFound",
+                404,
+                "Job Id not found",
+                "/api/job/DeleteAsync"
+            );
         } 
         _db.Jobs.Remove(delate);
         await _db.SaveChangesAsync();
-        return true;
     }
 }
