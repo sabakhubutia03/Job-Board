@@ -8,5 +8,5 @@ public interface IJobService
     Task<List<Job>> GetAllAsync();
     Task<Job> GetByIdAsync(int id);
     Task<Job> UpdateAsync(int id, Job job);
-    Task<bool> DeleteAsync(int id);
+    Task DeleteAsync(int id);
 }

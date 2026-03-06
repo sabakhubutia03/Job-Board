@@ -50,7 +50,7 @@ public class JobController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Job>> Delete(int id)
+    public async Task<ActionResult> Delete(int id)
     {
        await _jobService.DeleteAsync(id);
         _logger.LogInformation("Job deleted");
