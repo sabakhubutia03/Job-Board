@@ -1,30 +1,40 @@
 ### 🚀 Job Board API
-A robust ASP.NET Core Web API designed for managing job listings, companies, and users. This project follows modern architectural patterns and best practices for building scalable, maintainable, and secure backend systems.
+A robust ASP.NET Core Web API for managing job listings, companies, and users.
+This project follows modern architectural patterns and best practices for building scalable, maintainable, and secure backend systems.
 
 ### 🏗 Architecture & Design Patterns
-Clean Architecture: Implemented a clear separation of concerns using Controllers, Services, and Data Layers to ensure code maintainability.
+Clean Architecture
+Implemented a clear separation of concerns using Controllers, Services, and Data Layers to ensure maintainability and scalability.
 
-Dependency Injection (DI): Fully utilized DI for managing service lifetimes and database context, promoting loose coupling and testability.
+Dependency Injection (DI)
+Utilized ASP.NET Core's built-in dependency injection for managing services and database context, promoting loose coupling and better testability.
 
-Data Modeling: Designed structured schemas with One-to-Many relationships (e.g., a Company owning multiple Job listings).
+Entity Framework Core Data Modeling
+Designed relational database schemas with One-to-Many relationships (e.g., a Company can have multiple Job listings).
 
 ### 🌟 Advanced Features
-Custom Error Handling: Developed a global ApiException middleware that follows the RFC 7807 (Problem Details) standard for consistent and professional error responses.
+stom Error Handling
+Implemented a custom ApiException system following RFC 7807 (Problem Details) standard to provide consistent and structured error responses.
 
-User Management & Security: Integrated secure user registration and profile updates with robust validation logic.
+User Management
+Supports user creation, updates, and deletion with proper validation logic.
 
-Data Integrity: Implemented conflict detection (e.g., unique email checks) returning appropriate 409 Conflict HTTP status codes.
+Company & Job Management
+Companies can create and manage multiple job listings using RESTful API endpoints.
 
-Logging: Configured Serilog for structured logging, allowing for efficient tracking of application behavior and error debugging.
+Logging
+Configured Serilog for structured logging, enabling easier debugging and monitoring of application behavior.
 
 ### 🛠 Tech Stack
 Backend: .NET 8 / ASP.NET Core Web API
 
 Database: SQL Server
 
-ORM: Entity Framework Core (EF Core)
+ORM: Entity Framework Core
 
-API Documentation: Interactive Swagger/OpenAPI for real-time endpoint testing.
+Logging: Serilog
+
+API Documentation: Swagger / OpenAPI
 
 ### 🚀 Getting Started
 Clone the Repository: git clone <your-repo-url>
