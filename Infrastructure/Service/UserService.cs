@@ -1,34 +1,28 @@
-﻿using Application.Interface;
+﻿using Application.DTOs;
+using Application.Interface;
+using AutoMapper;
 using Domain.Entities;
 using Domain.Exceptions;
 using Job_Board_API.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Service;
 
 public class UserService : IUserService
 {
     private readonly AppDbContext _db;
-    private readonly ILogger<UserService> _logger;
-    public UserService(AppDbContext db, ILogger<UserService> logger)
+    private readonly IMapper _mapper;
+
+    public UserService(AppDbContext db, IMapper mapper)
     {
         _db = db;
-        _logger = logger;
+        _mapper = mapper;
     }
-    
-    public async Task<User> CreateAsync(User user)
+    public async Task<UserDto> CreateAsync(UserCreate user)
     {
-        if (user == null)
-        {
-            _logger.LogError("User is null or empty");
-            throw new ArgumentNullException(nameof(user), "User data cannot be null.");
-        }
-        
         var emailchek =  await _db.Users.AnyAsync(e => e.Email == user.Email);
         if (emailchek)
         {
-            _logger.LogError("Registration failed: Email {Email} is already registered.", user.Email);
             throw new ApiException(
                 "Email is already registered",     
                 "Conflict Error",                    
@@ -36,49 +30,45 @@ public class UserService : IUserService
                 "A user with this email address already exists in our system.", 
                 "/api/user/register"   
             );
-            
         }
+        var userEntity = _mapper.Map<User>(user);
         
-        _db.Users.Add(user);
+        _db.Users.Add(userEntity);
         await _db.SaveChangesAsync();
         
-        return user;
-    }
-
-    public async Task<List<User>> GetAllAsync()
-    {
-        var  usersList = await _db.Users.ToListAsync();
-        if (usersList.Count == 0)
-        {
-            _logger.LogInformation("Users is empty");
-        }
-        return usersList;
+        return _mapper.Map<UserDto>(userEntity);
         
     }
 
-    public async Task<User?> GetByIdAsync(int id)
+    public async Task<IEnumerable<UserDto>> GetAllAsync() =>
+        _mapper.Map<IEnumerable<UserDto>>(await _db.Users.ToListAsync());
+
+    public async Task<UserDto?> GetByIdAsync(int id)
     {
-        var getById = await _db.Users.FirstOrDefaultAsync(e => e.Id == id);
+        var getById = await _db.Users.FindAsync(id);
         if (getById == null)
         {
-            _logger.LogWarning("User with id {Id} not found", id);
+            throw new ApiException(
+                "User not found",
+                "User not found",
+                404,
+                "A user with this id does not exist in our system.",
+                "/api/user/GetByIdAsync"
+            );
         }
-
-        return getById;
+        return _mapper.Map<UserDto>(getById);
     }
 
-    public async Task<User> UpdateAsync(int id,User user)
+    public async Task<UserDto> UpdateAsync(int id, UserUpdate user)
     {
         if (user == null)
         {
-            _logger.LogError("User is null or empty");
             throw new ArgumentNullException(nameof(user));
         }
         
         var update = await _db.Users.FirstOrDefaultAsync(i => i.Id == id);
         if (update == null)
         {
-            _logger.LogError("User not found");
             throw new ApiException(
                 "User not found",
                 "Not Found", 
@@ -90,7 +80,6 @@ public class UserService : IUserService
         var emailExist = await _db.Users.AnyAsync(e => e.Email == user.Email && e.Id != id);
         if (emailExist)
         {
-            _logger.LogError("Email is already registered");
             throw new ApiException(
                 "Email is already registered",
                 "Conflict Error",
@@ -98,12 +87,24 @@ public class UserService : IUserService
                 "The email address you are trying to use is already taken by another user",
                 "/api/user/Update");
         }
-        update.Email = user.Email;
-        update.FirstName = user.FirstName;
-        update.LastName = user.LastName;
+
+        if (!string.IsNullOrWhiteSpace(user.FirstName))
+        {
+            update.FirstName = user.FirstName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.LastName))
+        {
+            update.LastName = user.LastName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(user.Email))
+        {
+            update.Email = user.Email; 
+        }
         
         await _db.SaveChangesAsync();
-        return update;
+        return _mapper.Map<UserDto>(update);
     }
 
     public async Task<bool> DeleteAsync(int id)
@@ -111,7 +112,6 @@ public class UserService : IUserService
         var deleteUser = await _db.Users.FirstOrDefaultAsync(i => i.Id == id);
         if (deleteUser == null)
         {
-            _logger.LogWarning("User with id {Id} not found", id);
             return false;
         }
         
@@ -121,3 +121,4 @@ public class UserService : IUserService
         return true;
     }
 }
+    

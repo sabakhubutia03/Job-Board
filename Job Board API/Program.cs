@@ -1,4 +1,7 @@
 using Application.Interface;
+using Application.Validator;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Infrastructure.Service;
 using Job_Board_API.Data;
 using Job_Board_API.JobServices;
@@ -27,6 +30,11 @@ builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<IJobService,JobService>();
 builder.Services.AddScoped<ICompanyService,CompanyService>();
 
+builder.Services.AddAutoMapper(typeof(Application.Mappings.MappingProfile).Assembly); 
+
+builder.Services.AddValidatorsFromAssemblyContaining<UserCreateValidator>();
+
+builder.Services.AddFluentValidationAutoValidation();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

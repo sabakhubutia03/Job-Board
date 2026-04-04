@@ -1,6 +1,6 @@
-﻿using Application.Interface;
-using Domain.Entities;
-using Job_Board_API.JobServices;
+﻿using Application.DTOs;
+using Application.Interface;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Job_Board_API.Controllers;
@@ -18,31 +18,28 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> CreateAsync(User user)
+    public async Task<ActionResult> CreateAsync(UserCreate user)
     {
         var createdUser = await _userService.CreateAsync(user);
-        _logger.LogInformation("Created User");
-        return Ok(createdUser);
+        return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, createdUser);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<User>>> GetAllAsync()
+    public async Task<ActionResult<IEnumerable<UserDto>>> GetAllAsync()
     {
         var getAllUsers = await _userService.GetAllAsync();
-        _logger.LogInformation("Get all Users");
         return Ok(getAllUsers);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetById(int id)
+    public async Task<ActionResult<UserDto>> GetById(int id)
     {
         var getUser = await _userService.GetByIdAsync(id);
-            _logger.LogInformation("Get User");
-            return Ok(getUser);
+        return Ok(getUser);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<User>> UpdateAsync(int id,User user)
+    public async Task<ActionResult<UserDto>> UpdateAsync(int id,UserUpdate user)
     {
         var update = await _userService.UpdateAsync(id, user);
         _logger.LogInformation("Update User");
@@ -50,11 +47,11 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<User>> DeleteAsync(int id)
+    public async Task<ActionResult> DeleteAsync(int id)
     {
          await _userService.DeleteAsync(id);
-        _logger.LogInformation("Delete User");
-        return Ok();
+         _logger.LogInformation("Delete User");
+         return NoContent();
     }
 
 }
