@@ -1,4 +1,4 @@
-﻿namespace Job_Board_API.Exceptions;
+﻿namespace Domain.Exceptions;
 
 public class ApiException : Exception
 {

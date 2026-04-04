@@ -1,7 +1,9 @@
-﻿using Job_Board_API.Exceptions;
-using Job_Board_API.Job_Board.Data;
-using Job_Board_API.Models;
+﻿using Application.Interface;
+using Domain.Entities;
+using Domain.Exceptions;
+using Job_Board_API.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Job_Board_API.JobServices;
 
@@ -23,11 +25,12 @@ public class JobService : IJobService
         {
             _logger.LogError("Job Title and Company Id cannot be null");
             throw new ApiException(
-                "Job Title and Company Id cannot be null",
-                " Conflict",
-                409,
-                "Job Title and Company Id cannot be null",
-                "/api/job/Create");
+                "Title cannot be empty",
+                "BadRequest",
+                400,
+                "Title is required",
+                "/api/Task/CreateTask"
+            );
         } 
         
         await _db.Jobs.AddAsync(job);
@@ -64,7 +67,17 @@ public class JobService : IJobService
 
     public async Task<Job> UpdateAsync(int id, Job job)
     {
-
+        if (id <= 0)
+        {
+            _logger.LogError("Job Id cannot be negative");
+            throw new ApiException(
+                "Invalid task id",
+                "BadRequest",
+                400,
+                "Task id must be greater than 0",
+                "/api/Task/UpdateTask"
+            );
+        }
         if (job == null)
         {
             _logger.LogError("Job  cannot be null");

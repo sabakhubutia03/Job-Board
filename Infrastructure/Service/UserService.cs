@@ -1,15 +1,17 @@
-﻿using Job_Board_API.Exceptions;
-using Job_Board_API.Job_Board.Data;
-using Job_Board_API.Models;
+﻿using Application.Interface;
+using Domain.Entities;
+using Domain.Exceptions;
+using Job_Board_API.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
-namespace Job_Board_API.JobServices;
+namespace Infrastructure.Service;
 
-public class UserServiceService : IUserService
+public class UserService : IUserService
 {
     private readonly AppDbContext _db;
-    private readonly ILogger<UserServiceService> _logger;
-    public UserServiceService(AppDbContext db, ILogger<UserServiceService> logger)
+    private readonly ILogger<UserService> _logger;
+    public UserService(AppDbContext db, ILogger<UserService> logger)
     {
         _db = db;
         _logger = logger;

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Job_Board_API.Models;
+namespace Domain.Entities;
 
 public class Company
 {

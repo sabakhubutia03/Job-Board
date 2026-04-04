@@ -1,5 +1,6 @@
-﻿using Job_Board_API.JobServices;
-using Job_Board_API.Models;
+﻿using Application.Interface;
+using Domain.Entities;
+using Job_Board_API.JobServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Job_Board_API.Controllers;

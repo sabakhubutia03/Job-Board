@@ -1,6 +1,6 @@
-﻿using Job_Board_API.Models;
+﻿using Domain.Entities;
 
-namespace Job_Board_API.JobServices;
+namespace Application.Interface;
 
 public interface IJobService
 {

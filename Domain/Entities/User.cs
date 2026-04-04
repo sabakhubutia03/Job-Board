@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Job_Board_API.Models;
+namespace Domain.Entities;
 
 public class User
 { 

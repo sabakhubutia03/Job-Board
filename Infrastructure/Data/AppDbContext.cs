@@ -1,7 +1,7 @@
-﻿using Job_Board_API.Models;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Job_Board_API.Job_Board.Data;
+namespace Job_Board_API.Data;
 
 
 public class AppDbContext : DbContext

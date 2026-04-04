@@ -1,9 +1,12 @@
-﻿using Job_Board_API.Exceptions;
-using Job_Board_API.Job_Board.Data;
-using Job_Board_API.Models;
+﻿using Application.Interface;
+using Domain.Entities;
+using Domain.Exceptions;
+using Job_Board_API.Data;
+using Job_Board_API.JobServices;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
-namespace Job_Board_API.JobServices;
+namespace Infrastructure.Service;
 
 public class CompanyService : ICompanyService
 {

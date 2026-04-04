@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
-using Job_Board_API.Exceptions;
-using Job_Board_API.Models;
+using Domain.Exceptions;
 
 namespace Job_Board_API.Middleware;
 

@@ -1,4 +1,6 @@
-using Job_Board_API.Job_Board.Data;
+using Application.Interface;
+using Infrastructure.Service;
+using Job_Board_API.Data;
 using Job_Board_API.JobServices;
 using Job_Board_API.Middleware;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<IUserService,UserServiceService>();
+builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<IJobService,JobService>();
 builder.Services.AddScoped<ICompanyService,CompanyService>();
 

@@ -1,4 +1,4 @@
-﻿namespace Job_Board_API.Models;
+﻿namespace Domain.Exceptions;
 
 public class ApiProblemDitaile
 {
