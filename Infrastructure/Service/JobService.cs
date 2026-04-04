@@ -1,29 +1,31 @@
-﻿using Application.Interface;
+﻿using Application.DTOs;
+using Application.Interface;
+using AutoMapper;
 using Domain.Entities;
 using Domain.Exceptions;
 using Job_Board_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Job_Board_API.JobServices;
+namespace Infrastructure.Service;
 
 public class JobService : IJobService
 {
-    private readonly AppDbContext _db;
+    private readonly AppDbContext  _db;
+    private readonly IMapper _mapper;
     private readonly ILogger<JobService> _logger;
 
-    public JobService(AppDbContext db, ILogger<JobService> logger)
+    public JobService(AppDbContext db, IMapper mapper, ILogger<JobService> logger)
     {
         _db = db;
+        _mapper = mapper;
         _logger = logger;
     }
-
-    public async Task<Job> CreateAsync(Job job)
-    { 
     
+    public async Task<JobDto> CreateAsync(JobCreateDto job)
+    {
         if (string.IsNullOrEmpty(job.Title) || job.CompanyId <= 0)
         {
-            _logger.LogError("Job Title and Company Id cannot be null");
             throw new ApiException(
                 "Title cannot be empty",
                 "BadRequest",
@@ -33,27 +35,23 @@ public class JobService : IJobService
             );
         } 
         
-        await _db.Jobs.AddAsync(job);
+        var jobEntity = _mapper.Map<Job>(job);
+        
+        await _db.Jobs.AddAsync(jobEntity);
         await _db.SaveChangesAsync();
-        return job;
+        
+        return _mapper.Map<JobDto>(jobEntity);
+        
     }
 
-    public async Task<List<Job>> GetAllAsync()
-    {
-        var jobs = await _db.Jobs.ToListAsync();
-        if (jobs.Count == 0)
-        {
-            _logger.LogInformation("No Jobs found");
-        }
-        return jobs;
-    }
+    public async Task<IEnumerable<JobDto>> GetAllAsync() => 
+     _mapper.Map<IEnumerable<JobDto>>(await _db.Jobs.ToListAsync());
 
-    public  async Task<Job> GetByIdAsync(int id)
+    public async Task<JobDto> GetByIdAsync(int id)
     {
         var jobId = await _db.Jobs.FindAsync(id);
         if (jobId == null)
         {
-            _logger.LogError("Job Id not found");
             throw new ApiException(
                 "Job Id not found",
                 "NotFound",
@@ -62,14 +60,13 @@ public class JobService : IJobService
                 "/api/job/GetByIdAsync"
             );
         }
-        return jobId;
+        return _mapper.Map<JobDto>(jobId);
     }
 
-    public async Task<Job> UpdateAsync(int id, Job job)
+    public async Task<JobDto> UpdateAsync(int id, JobUpdateDto job)
     {
         if (id <= 0)
         {
-            _logger.LogError("Job Id cannot be negative");
             throw new ApiException(
                 "Invalid task id",
                 "BadRequest",
@@ -80,7 +77,6 @@ public class JobService : IJobService
         }
         if (job == null)
         {
-            _logger.LogError("Job  cannot be null");
             throw new ApiException(
                 "Job  cannot be null or empty",
                 "BadRequest",
@@ -91,33 +87,33 @@ public class JobService : IJobService
         }
         
         var update = await _db.Jobs.FindAsync(id);
-       if (update == null)
-       {
-           _logger.LogError("Job Id not found");
-           throw new ApiException(
-               "Job Id not found",
-               "NotFound",
-               404,
-               "Job Id not found",
-               "/api/job/UpdateAsync"
-           );
-       }
+        if (update == null)
+        {
+            throw new ApiException(
+                "Job Id not found",
+                "NotFound",
+                404,
+                "Job Id not found",
+                "/api/job/UpdateAsync"
+            );
+        }
 
-       if (!string.IsNullOrEmpty(job.Title)) 
-           update.Title = job.Title;
+        if (!string.IsNullOrEmpty(job.Title)) 
+            update.Title = job.Title;
        
      
-       if(!string.IsNullOrEmpty(job.Description))
-           update.Description = job.Description;
+        if(!string.IsNullOrEmpty(job.Description))
+            update.Description = job.Description;
        
-       if(job.CompanyId > 0)
-           update.CompanyId = job.CompanyId;
-       
-       await _db.SaveChangesAsync();
-       return update;
+        if(job.CompanyId > 0)
+            update.CompanyId = job.CompanyId;
+        
+        await _db.SaveChangesAsync();
+        return _mapper.Map<JobDto>(update);
+
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var delate = await _db.Jobs.FindAsync(id);
         if (delate == null)
@@ -133,5 +129,6 @@ public class JobService : IJobService
         } 
         _db.Jobs.Remove(delate);
         await _db.SaveChangesAsync();
+        return true;
     }
 }

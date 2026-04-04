@@ -13,5 +13,9 @@ public class MappingProfile : Profile
         CreateMap<UserUpdate, User>();
         
         CreateMap<User, UserDto>();
+
+        CreateMap<JobCreateDto, Job>();
+        CreateMap<JobUpdateDto, Job>();
+        CreateMap<Job, JobDto>();
     }
 }

@@ -2,7 +2,6 @@
 using Domain.Entities;
 using Domain.Exceptions;
 using Job_Board_API.Data;
-using Job_Board_API.JobServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

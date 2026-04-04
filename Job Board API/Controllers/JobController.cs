@@ -1,6 +1,5 @@
-﻿using Application.Interface;
-using Domain.Entities;
-using Job_Board_API.JobServices;
+﻿using Application.DTOs;
+using Application.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Job_Board_API.Controllers;
@@ -19,7 +18,7 @@ public class JobController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Job>> Create([FromBody]Job job)
+    public async Task<ActionResult> Create([FromBody]JobCreateDto job)
     {
         var createJob = await _jobService.CreateAsync(job);
         _logger.LogInformation("Job created");
@@ -27,26 +26,23 @@ public class JobController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Job>>> GetAll()
+    public async Task<ActionResult<IEnumerable<JobDto>>> GetAll()
     {
         var jobs = await _jobService.GetAllAsync();
-        _logger.LogInformation("Jobs retrieved");
         return Ok(jobs);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Job>> GetById(int id)
+    public async Task<ActionResult<JobDto>> GetById(int id)
     {
         var jobId = await _jobService.GetByIdAsync(id);
-        _logger.LogInformation("Jobs retrieved");
         return Ok(jobId);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<Job>> Update(int id, Job job)
+    public async Task<ActionResult<JobDto>> Update(int id, JobUpdateDto job)
     {
         var update = await _jobService.UpdateAsync(id,job);
-        _logger.LogInformation("Job updated");
         return Ok(update);
     }
 
@@ -55,7 +51,7 @@ public class JobController : ControllerBase
     {
        await _jobService.DeleteAsync(id);
         _logger.LogInformation("Job deleted");
-        return Ok();
+        return NoContent();
     }
     
 }

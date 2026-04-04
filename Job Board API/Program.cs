@@ -4,7 +4,6 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infrastructure.Service;
 using Job_Board_API.Data;
-using Job_Board_API.JobServices;
 using Job_Board_API.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
