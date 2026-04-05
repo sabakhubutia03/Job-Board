@@ -10,12 +10,16 @@ public class MappingProfile : Profile
     {
         CreateMap<UserCreate, User>(); 
         
-        CreateMap<UserUpdate, User>();
+        CreateMap<UserUpdate, User>()
+            .ForAllMembers(opts => 
+                opts.Condition((src, dest, srcMember) => srcMember != null));
         
         CreateMap<User, UserDto>();
 
         CreateMap<JobCreateDto, Job>();
-        CreateMap<JobUpdateDto, Job>();
+        CreateMap<JobUpdateDto, Job>()
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => 
+                srcMember != null && (srcMember is int i ? i > 0 : true)));
         CreateMap<Job, JobDto>(); 
         
         CreateMap<CompanyCreateDto, Company>();

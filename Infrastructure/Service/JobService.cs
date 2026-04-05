@@ -65,25 +65,15 @@ public class JobService : IJobService
 
     public async Task<JobDto> UpdateAsync(int id, JobUpdateDto job)
     {
-        if (id <= 0)
+        if (id <= 0 || job == null)
         {
             throw new ApiException(
-                "Invalid task id",
-                "BadRequest",
-                400,
-                "Task id must be greater than 0",
-                "/api/Task/UpdateTask"
-            );
-        }
-        if (job == null)
-        {
-            throw new ApiException(
-                "Job  cannot be null or empty",
-                "BadRequest",
-                400,
-                "Job Id cannot be null",
-                "/api/job/UpdateAsync"
-            );
+                    "Invalid request data",
+                    "BadRequest",
+                    400,
+                    "ID must be positive and job data cannot be null",
+                    "/api/job/UpdateAsync"
+                    );
         }
         
         var update = await _db.Jobs.FindAsync(id);
@@ -98,16 +88,22 @@ public class JobService : IJobService
             );
         }
 
-        if (!string.IsNullOrEmpty(job.Title)) 
-            update.Title = job.Title;
-       
-     
-        if(!string.IsNullOrEmpty(job.Description))
-            update.Description = job.Description;
-       
-        if(job.CompanyId > 0)
-            update.CompanyId = job.CompanyId;
-        
+        if (job.CompanyId.HasValue)
+        {
+            var existingCompany = await _db.Companies
+                .AnyAsync(c => c.Id == job.CompanyId.Value);
+            if (!existingCompany)
+            {
+                throw new ApiException(
+                    "Company not found",
+                    "NotFound",
+                    404,
+                    "Company not found",
+                    "/api/companies/UpdateAsync"
+                );
+            }
+        }
+        _mapper.Map(job, update);
         await _db.SaveChangesAsync();
         return _mapper.Map<JobDto>(update);
 

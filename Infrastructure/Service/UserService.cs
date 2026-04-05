@@ -87,21 +87,7 @@ public class UserService : IUserService
                 "The email address you are trying to use is already taken by another user",
                 "/api/user/Update");
         }
-
-        if (!string.IsNullOrWhiteSpace(user.FirstName))
-        {
-            update.FirstName = user.FirstName;
-        }
-
-        if (!string.IsNullOrWhiteSpace(user.LastName))
-        {
-            update.LastName = user.LastName;
-        }
-
-        if (!string.IsNullOrWhiteSpace(user.Email))
-        {
-            update.Email = user.Email; 
-        }
+        _mapper.Map(user, update);
         
         await _db.SaveChangesAsync();
         return _mapper.Map<UserDto>(update);
