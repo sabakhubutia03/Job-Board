@@ -1,12 +1,13 @@
-﻿using Domain.Entities;
+﻿using Application.DTOs;
+using Domain.Entities;
 
 namespace Application.Interface;
 
 public interface ICompanyService
 {
-    Task<Company> CreateAsync(Company company);
-    Task<List<Company>> GetAllAsync();
-    Task<Company> GetByIdAsync(int id);
-    Task<Company> UpdateAsync(int id,Company company);
-    Task DeleteAsync(int id);
+    Task<CompanyDto> CreateAsync(CompanyCreateDto company);
+    Task<IEnumerable<CompanyDto>> GetAllAsync();
+    Task<CompanyDto> GetByIdAsync(int id);
+    Task<CompanyDto> UpdateAsync(int id,CompanuUpdateDto company);
+    Task <bool> DeleteAsync(int id);
 }

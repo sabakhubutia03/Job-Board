@@ -16,6 +16,12 @@ public class MappingProfile : Profile
 
         CreateMap<JobCreateDto, Job>();
         CreateMap<JobUpdateDto, Job>();
-        CreateMap<Job, JobDto>();
+        CreateMap<Job, JobDto>(); 
+        
+        CreateMap<CompanyCreateDto, Company>();
+        CreateMap<Company, CompanyDto>();
+        CreateMap<CompanuUpdateDto, Company>() 
+            .ForAllMembers(opts =>
+                opts.Condition((src, dest ,srcMember) => srcMember != null));
     }
 }

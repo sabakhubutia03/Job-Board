@@ -1,5 +1,5 @@
-﻿using Application.Interface;
-using Domain.Entities;
+﻿using Application.DTOs;
+using Application.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Job_Board_API.Controllers;
@@ -18,34 +18,30 @@ public class CompanyController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Company>> Create(Company company)
+    public async Task<ActionResult> Create(CompanyCreateDto company)
     {
         var newCompany = await _companyService.CreateAsync(company);
-        _logger.LogInformation("New company created");
         return CreatedAtAction(nameof(GetById), new{ id = newCompany.Id },newCompany);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Company>>> GetAll()
+    public async Task<ActionResult<IEnumerable<CompanyDto>>> GetAll()
     {
         var getAll = await _companyService.GetAllAsync();
-        _logger.LogInformation("Company retrieved");
         return Ok(getAll);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Company>> GetById(int id)
+    public async Task<ActionResult<CompanyDto>> GetById(int id)
     {
         var getById = await _companyService.GetByIdAsync(id);
-        _logger.LogInformation("Company retrieved");
         return Ok(getById);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<Company>> Update(int id, Company company)
+    public async Task<ActionResult<CompanyDto>> Update(int id, CompanuUpdateDto company)
     {
         var updateCompany = await _companyService.UpdateAsync(id,company);
-        _logger.LogInformation(" Company updated");
         return Ok(updateCompany);
     }
 
@@ -54,6 +50,6 @@ public class CompanyController : ControllerBase
     {
          await _companyService.DeleteAsync(id);
         _logger.LogInformation(" Company deleted");
-        return Ok();
+        return NoContent();
     }
 }

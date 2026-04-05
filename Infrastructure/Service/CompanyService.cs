@@ -1,4 +1,6 @@
-﻿using Application.Interface;
+﻿using Application.DTOs;
+using Application.Interface;
+using AutoMapper;
 using Domain.Entities;
 using Domain.Exceptions;
 using Job_Board_API.Data;
@@ -10,19 +12,20 @@ namespace Infrastructure.Service;
 public class CompanyService : ICompanyService
 {
     private readonly AppDbContext _db;
+    private readonly IMapper _mapper;
     private readonly ILogger<CompanyService> _logger;
 
-    public CompanyService(AppDbContext db, ILogger<CompanyService> logger)
+    public CompanyService(AppDbContext db, IMapper mapper, ILogger<CompanyService> logger)
     {
         _db = db;
+        _mapper = mapper;
         _logger = logger;
     }
 
-    public async Task<Company> CreateAsync(Company company)
+    public async Task<CompanyDto> CreateAsync(CompanyCreateDto company)
     {
         if (string.IsNullOrEmpty(company.Name))
         {
-            _logger.LogWarning("Company name is empty");
             throw new ApiException(
                 "Company name is empty or null",
                 "BadRequest",
@@ -33,25 +36,26 @@ public class CompanyService : ICompanyService
 
         if (string.IsNullOrEmpty(company.Industry))
         {
-            _logger.LogWarning("Industry is empty");
             throw new ApiException(
                 "Industry is empty or null",
                 "BadRequest",
                 400,
                 "Industry cannot be empty",
                 "/api/company/industry"
-                );
+            );
         }
         
-        await _db.Companies.AddAsync(company);
+        var companyEntity = _mapper.Map<Company>(company);
+        await _db.Companies.AddAsync(companyEntity);
         await _db.SaveChangesAsync();
-        return company;
+        return _mapper.Map<CompanyDto>(companyEntity);
+
     }
 
-    public async Task<List<Company>> GetAllAsync() 
-        => await _db.Companies.ToListAsync();
+    public async Task<IEnumerable<CompanyDto>> GetAllAsync() 
+    => _mapper.Map<IEnumerable<CompanyDto>>(await _db.Companies.ToListAsync());
 
-    public async Task<Company> GetByIdAsync(int id)
+    public async Task<CompanyDto> GetByIdAsync(int id)
     {
         var getById = await _db.Companies.FindAsync(id);
         if (getById == null)
@@ -65,12 +69,11 @@ public class CompanyService : ICompanyService
                 "/api/company/id"
             );
         }
-        return getById;
+        return _mapper.Map<CompanyDto>(getById);
     }
 
-    public async Task<Company> UpdateAsync(int id, Company company)
+    public async Task<CompanyDto> UpdateAsync(int id, CompanuUpdateDto company)
     {
-
         if (company == null)
         {
             _logger.LogWarning("Company not found");
@@ -96,20 +99,12 @@ public class CompanyService : ICompanyService
             );
         }
         
-        if(!string.IsNullOrEmpty(company.Name)) 
-            updateCompany.Name = company.Name;
-        
-        if(!string.IsNullOrEmpty(company.Industry)) 
-            updateCompany.Industry = company.Industry;
-        
-        if(!string.IsNullOrEmpty(company.Address)) 
-            updateCompany.Address = company.Address;
-        
+        _mapper.Map(company, updateCompany);
         await _db.SaveChangesAsync();
-        return updateCompany;
+        return _mapper.Map<CompanyDto>(updateCompany);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var deleteCompany = await _db.Companies.FindAsync(id);
         if (deleteCompany == null)
@@ -124,8 +119,8 @@ public class CompanyService : ICompanyService
             );
         }
         
-        _db.Remove(deleteCompany);
+        _db.Companies.Remove(deleteCompany);
         await _db.SaveChangesAsync();
-      
+        return true;
     }
 }
