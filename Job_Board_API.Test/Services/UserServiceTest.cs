@@ -126,4 +126,65 @@ public class UserServiceTest
         var exception = await Assert.ThrowsAsync<ApiException>(action);
         Assert.Equal(404, exception.StatusCode);
     }
+
+    [Fact]
+    public async Task UpdateAsync_ValidUser_WhenIsValid()
+    {
+        var user = new User
+        {
+            Id = 1,
+            FirstName = "Test",
+            LastName = "Test",
+            Email = "Test@gmail.com",
+            Password = "1234"
+        };
+        _db.Users.Add(user);
+        await _db.SaveChangesAsync();
+
+        var updateUser = new UserUpdate
+        {
+            Email = "Update-Email",
+            FirstName = "Update-Update",
+            LastName = "Update-Update"
+        };
+        
+        _mapperMock.Setup(m => m.Map(updateUser, It.IsAny<User>()));
+        var expectedDto = new UserDto{Id = 1, Email = "Update-Email", FirstName = "Update-Update", LastName = "Update-Update"};
+        _mapperMock.Setup(m => m.Map<UserDto>(It.IsAny<User>())).Returns(expectedDto);
+        
+        var result = await _userService.UpdateAsync(user.Id, updateUser);
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ShouldThrowException_WhenIdIsInvalid()
+    {
+        var invalidId = 999;
+        
+        var action = () => _userService.DeleteAsync(invalidId);
+        var exception = await Assert.ThrowsAsync<ApiException>(action);
+        
+        Assert.Equal(404, exception.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ValidUser_WhenIsValid()
+    {
+        var user = new User
+        {
+            Id = 1,
+            FirstName = "Test-Delete-FirstName",
+            LastName = "Test-Delete-LastName",
+            Email = "Test@gmail.com-Delete-Email",
+            Password = "1234-delete"
+        };
+        _db.Users.Add(user);
+        await _db.SaveChangesAsync();
+        
+        await _userService.DeleteAsync(user.Id);
+        
+        var result = await _db.Users.FindAsync(user.Id);
+        Assert.Null(result);
+    }
+    
 }

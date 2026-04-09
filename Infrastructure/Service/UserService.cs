@@ -98,7 +98,13 @@ public class UserService : IUserService
         var deleteUser = await _db.Users.FirstOrDefaultAsync(i => i.Id == id);
         if (deleteUser == null)
         {
-            return false;
+            throw new ApiException(
+                "User not found",
+                "User not found",
+                404,
+                "A user with this id does not exist in our system.",
+                "/api/user/DeleteAsync"
+            );
         }
         
         _db.Users.Remove(deleteUser);
